@@ -8,7 +8,7 @@ let selectedSubmenu = null;
 let selectedMain = null;
 let menuFontSize = 40;
 let menuBoxHeight = 50;
-let menuX, menuY;
+let menuX = 20, menuY;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -46,7 +46,6 @@ function setup() {
     maxAttempts--;
   }
 
-  menuX = width - 300;
   menuY = 20;
   textFont('sans-serif');
 }
@@ -116,23 +115,24 @@ function drawMenu() {
     rect(menuX, y, 280, menuBoxHeight, 8);
     fill(textColor);
     text(menuItems[i], menuX + 10, y + menuBoxHeight / 2);
-  }
 
-  if (submenuLocked || showSubmenu) {
-    for (let i = 0; i < submenuItems.length; i++) {
-      let y = menuY + 2 * (menuBoxHeight + 10) + (i + 1) * (menuBoxHeight + 5);
-      let x = menuX + 20;
-      let w = 260;
-      let h = menuBoxHeight;
+    // 如果是作品集，畫出子選單在右側避免重疊
+    if ((submenuLocked || showSubmenu) && menuItems[i] === "作品集") {
+      for (let j = 0; j < submenuItems.length; j++) {
+        let sy = y + (j + 1) * (menuBoxHeight + 5);
+        let sx = menuX + 300; // 與主選單有間距不蓋住
+        let sw = 260;
+        let sh = menuBoxHeight;
 
-      let isHovered = mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h;
-      let boxColor = isHovered ? '#b9fbc0' : '#ffafcc';
-      let textColor = isHovered ? '#cfbaf0' : '#a2d2ff';
+        let isSubHovered = mouseX > sx && mouseX < sx + sw && mouseY > sy && mouseY < sy + sh;
+        let subBoxColor = isSubHovered ? '#b9fbc0' : '#ffafcc';
+        let subTextColor = isSubHovered ? '#cfbaf0' : '#a2d2ff';
 
-      fill(boxColor);
-      rect(x, y, w, h, 8);
-      fill(textColor);
-      text(submenuItems[i], x + 10, y + h / 2);
+        fill(subBoxColor);
+        rect(sx, sy, sw, sh, 8);
+        fill(subTextColor);
+        text(submenuItems[j], sx + 10, sy + sh / 2);
+      }
     }
   }
 }
@@ -163,7 +163,6 @@ function mousePressed() {
         submenuLocked = !submenuLocked;
         showSubmenu = submenuLocked;
       }
-      
 
       if (item === "首頁") {
         openInIframe("https://hackmd.io/Nbo2mTD5TIqSI8oDgiFHgQ");
@@ -174,24 +173,23 @@ function mousePressed() {
       } else if (item === "測驗卷") {
         openInIframe("https://selina950319.github.io/0415-1/");
       }
-    
       return;
     }
   }
 
   if (submenuLocked) {
-    for (let i = 0; i < submenuItems.length; i++) {
-      let y = menuY + 2 * (menuBoxHeight + 10) + (i + 1) * (menuBoxHeight + 5);
-      let x = menuX + 20;
-      let w = 260;
-      let h = menuBoxHeight;
+    for (let j = 0; j < submenuItems.length; j++) {
+      let sy = menuY + 2 * (menuBoxHeight + 10) + (j + 1) * (menuBoxHeight + 5);
+      let sx = menuX + 300;
+      let sw = 260;
+      let sh = menuBoxHeight;
 
-      if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h) {
-        selectedSubmenu = submenuItems[i];
-        if (i === 0) openInIframe("https://hackmd.io/KRjjXuzbS-CJz-1mqB5hXA");
-        if (i === 1) openInIframe("https://selina950319.github.io/20250310/");
-        if (i === 2) openInIframe("https://selina950319.github.io/20250317/");
-        if (i === 3) openInIframe("https://selina950319.github.io/20250324/");
+      if (mouseX > sx && mouseX < sx + sw && mouseY > sy && mouseY < sy + sh) {
+        selectedSubmenu = submenuItems[j];
+        if (j === 0) openInIframe("https://hackmd.io/KRjjXuzbS-CJz-1mqB5hXA");
+        if (j === 1) openInIframe("https://selina950319.github.io/20250310/");
+        if (j === 2) openInIframe("https://selina950319.github.io/20250317/");
+        if (j === 3) openInIframe("https://selina950319.github.io/20250324/");
         return;
       }
     }
@@ -199,17 +197,16 @@ function mousePressed() {
 }
 
 function openInIframe(url) {
-  let iframe = document.getElementById("webview");
-  let closeBtn = document.getElementById("closeBtn");
+  const iframe = document.getElementById("webview");
+  const closeBtn = document.getElementById("closeBtn");
   iframe.src = url;
   iframe.style.display = "block";
   closeBtn.style.display = "block";
 }
 
-
 function hideIframe() {
-  let iframe = document.getElementById("webview");
-  let closeBtn = document.getElementById("closeBtn");
+  const iframe = document.getElementById("webview");
+  const closeBtn = document.getElementById("closeBtn");
   iframe.style.display = "none";
   closeBtn.style.display = "none";
   iframe.src = "";
